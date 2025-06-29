@@ -29,6 +29,7 @@ class BibleInfo(BaseModel):
     Model to represent character or place information.
     """
     name = CharField(max_length=255)
+    raw_name = CharField(max_length=255)
     description = TextField()
     novel = ForeignKeyField(Novel, backref='bible_info', on_delete='CASCADE')
 
