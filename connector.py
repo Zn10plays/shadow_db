@@ -2,6 +2,9 @@ from peewee import *
 from datetime import datetime
 import os 
 
+import dotenv
+dotenv.load_dotenv()
+
 db_port = os.getenv('SQL_SERVER_PORT', '3306')
 db_host = os.getenv('SQL_SERVER_HOST', 'localhost')
 db_name = os.getenv('SQL_DB_NAME', 'shadowdb')
