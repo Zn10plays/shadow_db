@@ -27,5 +27,6 @@ podman run --rm -d \
   --name shadowdb \
   -p $SQL_SERVER_PORT:$SQL_SERVER_PORT \
   -e MYSQL_ROOT_PASSWORD="$SQL_ROOT_PASSWORD" \
+  -e MYSQL_TCP_PORT="$SQL_SERVER_PORT" \
   -v $DB_PATH:/var/lib/mysql \
   docker.io/library/mysql:latest
