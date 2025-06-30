@@ -10,11 +10,8 @@ db_host = os.getenv('SQL_SERVER_HOST', 'localhost')
 db_name = os.getenv('SQL_DB_NAME', 'shadowdb')
 db_password = os.getenv('SQL_ROOT_PASSWORD', 'password')
 
-
-db_url = f'mysql://root:{db_password}@{db_host}:{db_port}/{db_name}'
-
 # SQLite DB initialization
-db = MySQLDatabase(db_url)
+db = MySQLDatabase('shadow', host=db_host, port=int(db_port), user='root', password=db_password)
 
 # Base model
 class BaseModel(Model):
