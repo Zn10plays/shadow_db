@@ -24,6 +24,7 @@ class Novel(BaseModel):
     url = CharField(500, unique=True)
     last_updated = DateTimeField(default=datetime.now)
 
+# character bible info
 class BibleInfo(BaseModel):
     """
     Model to represent character or place information.
@@ -35,6 +36,9 @@ class BibleInfo(BaseModel):
 
 # Chapter model
 class Chapter(BaseModel):
+    """
+    Model to represent a chapter in a novel.
+    """
     novel = ForeignKeyField(Novel, backref='chapters', on_delete='CASCADE')
     content = TextField()
     accessed_at = DateTimeField(default=datetime.now)
@@ -53,5 +57,79 @@ class Chapter(BaseModel):
             (('novel', 'chapter_number'), True),  # Unique per novel
         )
 
+# General logs for app
+class Logs(BaseModel):
+    """
+    Model to store logs for all the applications application.
+    """
+    service = CharField(max_length=255)
+    message = TextField()
+    message_type = CharField(max_length=50)  # e.g., 'info', 'error', 'debug'
+    time= DateTimeField(default=datetime.now)
+    instance_id = CharField(max_length=255, null=True)
+
+# keep all books currently being read in a place
+class BookShelf(BaseModel):
+    """
+    Model to represent a library of novels.
+    """
+    novel = ForeignKeyField(Novel, backref='bookshelves', on_delete='CASCADE')
+    user = ForeignKeyField('User', backref='bookshelves', on_delete='CASCADE')
+
+    class Meta:
+        primary_key = CompositeKey('novel', 'user')
+        indexes = (
+            (('novel', 'user'), True),  # Unique per user
+        )
+    
+# keep track of what chapers a user had read
+class ChaptersRead(BaseModel):
+    """
+    Model to track chapters read by a user.
+    """
+    chapter = ForeignKeyField(Chapter, backref='read_by', on_delete='CASCADE')
+    user = ForeignKeyField('User', backref='chapters_read', on_delete='CASCADE')
+    read_at = DateTimeField(default=datetime.now)
+
+    class Meta:
+        primary_key = CompositeKey('chapter', 'user')
+
+# user class
+class User(BaseModel):
+    """
+    Model to represent a user in the system.
+    """
+    username = CharField(max_length=255, unique=True)
+    password = CharField(max_length=255)
+    created_at = DateTimeField(default=datetime.now)
+    
+
+class Bookmarks(BaseModel):
+    """
+    Model to represent bookmarks for chapters.
+    """
+    chapter = ForeignKeyField(Chapter, backref='bookmarks', on_delete='CASCADE')
+    novel = ForeignKeyField(Novel, backref='bookmarks', on_delete='CASCADE')
+    position = IntegerField(default=0)
+    content = TextField(null=True)
+    bookmark_filled = BooleanField(default=False)
+    user = ForeignKeyField(User, backref='bookmarks', on_delete='CASCADE')
+    created_at = DateTimeField(default=datetime.now)
+
+    class Meta:
+        primary_key = CompositeKey('chapter', 'user')
+
+        indexes = (
+            (('chapter', 'user', 'position'), True),  # Unique per user
+        )
+
 db.connect()
-db.create_tables([Novel, Chapter, BibleInfo], safe=True)
+db.create_tables([
+    Novel, 
+    Chapter, 
+    BibleInfo, 
+    Logs,
+    BookShelf,
+    ChaptersRead,
+    User,
+    Bookmarks], safe=True)
