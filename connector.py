@@ -68,13 +68,22 @@ class Logs(BaseModel):
     time= DateTimeField(default=datetime.now)
     instance_id = CharField(max_length=255, null=True)
 
+# user class
+class User(BaseModel):
+    """
+    Model to represent a user in the system.
+    """
+    username = CharField(max_length=255, unique=True)
+    password = CharField(max_length=255)
+    created_at = DateTimeField(default=datetime.now)
+    
 # keep all books currently being read in a place
 class BookShelf(BaseModel):
     """
     Model to represent a library of novels.
     """
     novel = ForeignKeyField(Novel, backref='bookshelves', on_delete='CASCADE')
-    user = ForeignKeyField('User', backref='bookshelves', on_delete='CASCADE')
+    user = ForeignKeyField(User, backref='bookshelves', on_delete='CASCADE')
 
     class Meta:
         primary_key = CompositeKey('novel', 'user')
@@ -88,21 +97,12 @@ class ChaptersRead(BaseModel):
     Model to track chapters read by a user.
     """
     chapter = ForeignKeyField(Chapter, backref='read_by', on_delete='CASCADE')
-    user = ForeignKeyField('User', backref='chapters_read', on_delete='CASCADE')
+    user = ForeignKeyField(User, backref='chapters_read', on_delete='CASCADE')
     read_at = DateTimeField(default=datetime.now)
 
     class Meta:
         primary_key = CompositeKey('chapter', 'user')
 
-# user class
-class User(BaseModel):
-    """
-    Model to represent a user in the system.
-    """
-    username = CharField(max_length=255, unique=True)
-    password = CharField(max_length=255)
-    created_at = DateTimeField(default=datetime.now)
-    
 
 class Bookmarks(BaseModel):
     """
@@ -129,7 +129,8 @@ db.create_tables([
     Chapter, 
     BibleInfo, 
     Logs,
+    User,
     BookShelf,
     ChaptersRead,
-    User,
-    Bookmarks], safe=True)
+    Bookmarks
+    ], safe=True)
