@@ -31,6 +31,7 @@ class BibleInfo(BaseModel):
     """
     name = CharField(max_length=255)
     raw_name = CharField(max_length=255)
+    classification = CharField(max_length=50)  # e.g., 'character', 'place'
     description = TextField()
     novel = ForeignKeyField(Novel, backref='bible_info', on_delete='CASCADE')
 
